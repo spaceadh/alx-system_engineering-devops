@@ -1,7 +1,6 @@
 #!/bin/bash
 pwd
-press
-control x and contro s (to save)
+press control x and control s (to save)
 then type 0-current_working_directory
 press
 control x and control c (to exit emacs)
