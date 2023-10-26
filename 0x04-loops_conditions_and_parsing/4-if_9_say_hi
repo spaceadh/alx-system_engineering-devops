@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Displays Hi on the 9th line
+string_a='Best School'
+counter=0
+while [ $counter -lt 10 ]; do
+	echo "$string_a"
+	(( counter+=1 ))
+	if [ $counter -eq 9 ]; then
+		echo "Hi"
+	fi
+done
