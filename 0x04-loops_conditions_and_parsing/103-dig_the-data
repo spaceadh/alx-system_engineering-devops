@@ -1,5 +1,2 @@
 #!/bin/bash
-
-# Use awk to process the Apache log file, count occurrences, and sort
-awk '{ip_code = $1 " " $9} {count[ip_code]++} END {for (ic in count) {print count[ic], ic}}' access.log | sort -nr
-
+awk '{ip_code = $1 " " $9} {count[ip_code]++} END {for (ic in count) {print count[ic], ic}}' apache-access.log | sort -nr

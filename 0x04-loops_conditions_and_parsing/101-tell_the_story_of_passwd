@@ -1,12 +1,7 @@
 #!/bin/bash
-
-# Read the /etc/passwd file line by line
 while IFS=: read -r username _ uid gid info home shell; do
-    # Extract the password field and user description
     IFS=' ' read -ra passwd_info <<< "$info"
     password="${passwd_info[0]}"
     user_description="${passwd_info[@]:1}"
-
     echo "The user $username is part of the $gid gang, lives in $home and rides $shell. $uid's place is protected by the passcode $password, more info about the user here: $user_description"
 done < /etc/passwd
-
