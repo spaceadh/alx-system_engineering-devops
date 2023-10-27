@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# Define the function to handle signals
+cleanup() {
+    echo "I hate the kill command"
+    exit
+}
+
+terminate() {
+    echo "Y U no love me?!"
+    exit
+}
+
+# Trap signals
+trap 'cleanup' SIGTERM SIGQUIT
+trap 'terminate' SIGINT
+
+# Get the current process ID and write it to the PID file
+echo $$ > /var/run/myscript.pid
+
+# Start an infinite loop
+while true; do
+    echo "To infinity and beyond"
+    sleep 1
+done
+
+# Delete the PID file and exit
+rm /var/run/myscript.pid
