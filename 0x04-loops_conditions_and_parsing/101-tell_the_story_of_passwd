@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 while IFS=: read -r username _ uid gid info home shell; do
     IFS=' ' read -ra passwd_info <<< "$info"
     password="${passwd_info[0]}"
