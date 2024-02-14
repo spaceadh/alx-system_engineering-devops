@@ -1,17 +1,18 @@
 #!/usr/bin/python3
-"""Module for task 0"""
+"""
+ function that queries the Reddit API
+ and returns the number of subscribers
+"""
+import requests
 
 
 def number_of_subscribers(subreddit):
-    """Queries the Reddit API and returns the number of subscribers
-    to the subreddit"""
-    import requests
-
-    sub_info = requests.get("https://www.reddit.com/r/{}/about.json"
-                            .format(subreddit),
-                            headers={"User-Agent": "My-User-Agent"},
-                            allow_redirects=False)
-    if sub_info.status_code >= 300:
-        return 0
-
-    return sub_info.json().get("data").get("subscribers")
+    """initializate"""
+    if (type(subreddit) is not str):
+        return(0)
+    url_api = ("https://www.reddit.com/r/{}/about.json".format(subreddit))
+    headers = {'user-agent': 'safari:holberton/0.1.0'}
+    response = requests.get(url_api, headers=headers)
+    if response.status_code is not 200:
+        return(0)
+    return(response.json().get("data").get("subscribers"))
