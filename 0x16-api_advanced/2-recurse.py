@@ -1,35 +1,28 @@
 #!/usr/bin/python3
-"""
-Querying the Reddit API recursively
-"""
-import requests
+"""Module for task 2"""
 
 
-def recurse(subreddit, hot_list=[], after=None):
-    if type(subreddit) is not str:
+def recurse(subreddit, hot_list=[], count=0, after=None):
+    """Queries the Reddit API and returns all hot posts
+    of the subreddit"""
+    import requests
+
+    sub_info = requests.get("https://www.reddit.com/r/{}/hot.json"
+                            .format(subreddit),
+                            params={"count": count, "after": after},
+                            headers={"User-Agent": "My-User-Agent"},
+                            allow_redirects=False)
+    if sub_info.status_code >= 400:
         return None
-    sub = subreddit
-    api_url = "https://api.reddit.com/r/{}/hot?after={}".format(sub, after)
-    headers = {'user-agent': 'safari:holberton/0.1.0'}
-    response = requests.get(api_url, headers=headers)
-    if response.status_code == 200:
-        hot_posts = response.json()["data"]["children"]
-        after = response.json()["data"]["after"]
-        if after is None:
-            hot_list = titles(hot_posts, len(hot_posts))
-            return hot_list
-        hot_list.append(recurse(subreddit, hot_list, after=after))
-        hot_list = titles(hot_posts, len(hot_posts))
-    else:
-        return None
-    return hot_list
 
+    hot_l = hot_list + [child.get("data").get("title")
+                        for child in sub_info.json()
+                        .get("data")
+                        .get("children")]
 
-def titles(hot_list, length, titles_list=[]):
-    """
-    Gets titles of posts from the data
-    """
-    if length == 0:
-        return titles_list
-    titles_list.append(hot_list[length - 1]["data"]["title"])
-    return titles(hot_list, length - 1, titles_list)
+    info = sub_info.json()
+    if not info.get("data").get("after"):
+        return hot_l
+
+    return recurse(subreddit, hot_l, info.get("data").get("count"),
+                   info.get("data").get("after"))
