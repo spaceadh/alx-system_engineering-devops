@@ -1,73 +1,34 @@
+# Configures Nginx to serve the route /airbnb-onepage/ from AirBnB_clone_v2.
+
 server {
+# Listen on port 80
     listen 80 default_server;
-
-    # Proxy requests to the application server for the route /airbnb-onepage/
-    location /airbnb-onepage/ {
-        proxy_pass http://127.0.0.1:5000/;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-
-    location /api {
-        proxy_pass http://127.0.0.1:5000/;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-
-    location / {
-        proxy_pass http://127.0.0.1:5000/;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-
-    location /static {
-        proxy_pass http://127.0.0.1:5000/;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-
-    # Dynamic route for number_odd_or_even
-    location ~ /airbnb-dynamic/number_odd_or_even/(\d+)$ {
-        proxy_pass http://127.0.0.1:5000/;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-
-    # 404 Page:
-    error_page 404 /custom_404.html;
-    location = /custom_404.html {
-        root /usr/share/nginx/html;
-        internal;
-    }
-
-    # Header:
-    add_header X-Served-By "452994-web-01";
-
-    # Rewrite:
-    rewrite ^/redirect_me https://www.youtube.com/watch?v=QH2-TGUlwu4 permanent;
-
     listen [::]:80 default_server;
 
-    root /var/www/html;
+# Use IP of server as domain name
+    server_name 54.175.166.7;
 
-    # Add index.php to the list if you are using PHP
-    index index.html index.htm index.nginx-debian.html;
+# Customize HTTP response header
+    add_header X-Served-By 131064-web-01;
 
-    server_name _;
-
-    location / {
-        # First attempt to serve request as file, then
-        # as directory, then fall back to displaying a 404.
-        try_files $uri $uri/ =404;
+# Serve /airbnb-onepage/ route from AirBnB_clone_v2
+    location /airbnb-onepage {
+        proxy_pass http://localhost:5000;
     }
+
+    location /airbnb-dynamic/number_odd_or_even/(?<integer>/d+){
+        proxy_pass http://localhost:5001/airbnb-dynamic/number_odd_or_even
+}
+
+    root /var/www/html;
+    index index.html;
+    location /redirect_me {
+      return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;
+   }
+
+# 404 error page
+    error_page 404 /404.html;
+    location = /404.html{
+       internal;
+   }
 }

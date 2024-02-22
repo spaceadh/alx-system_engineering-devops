@@ -1,49 +1,50 @@
+# Configures Nginx to serve the route /airbnb-onepage/ from AirBnB_clone_v4.
+
 server {
-        listen 80 default_server;
+# Listen on port 80
+    listen 80 default_server;
+    listen [::]:80 default_server;
 
-        # 0x1A-application_server - 2-app_server-nginx_config
-        location = /airbnb-onepage/ {
-                 proxy_pass http://0.0.0.0:5000/airbnb-onepage/;
-        }
+# Use IP of server as domain name
+    server_name 54.175.166.7;
 
-        # 0x1A-application_server - 3-app_server-nginx_config
-        location ~ /airbnb-dynamic/number_odd_or_even/(\d+)$ {
-                proxy_pass http://0.0.0.0:5001/number_odd_or_even/$1;
-        }
+# Customize HTTP response header
+    add_header X-Served-By 131064-web-01;
 
-        # 0x1A-application_server - 4-app_server-nginx_config
-        location /api {
-                proxy_pass http://0.0.0.0:5002/api;
-        }
+# Serve /airbnb-onepage/ route from AirBnB_clone_v2
+    location /airbnb-onepage {
+        proxy_pass http://localhost:5000;
+    }
 
-        # 0x1A-application_server - 4-app_server-nginx_config
-        location / {
-                proxy_pass http://0.0.0.0:5003/2-hbnb;
-        }
+# Serve /number_odd_or_even/ route on AirBnB_clone_v2
+    location /airbnb-dynamic/number_odd_or_even/(\d+)${
+          proxy_pass http://localhost:5001/airbnb-dynamic/number_odd_or_even/$1;
+ }
+    root /var/www/html;
+    index index.html;
+    location /redirect_me {
+      return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;
+   }
 
-        # 0x1A-application_server - 4-app_server-nginx_config
-        location /static {
-                proxy_pass http://0.0.0.0:5003;
-        }
+# Serve API on AirBnB_clone_v3
+    location /api {
+        proxy_pass http://localhost:5002/api;
+    }
 
-        # 404 Page:
-        error_page 404 /custom_404.html; location = /custom_404.html {
-        root /usr/share/nginx/html;
-        internal;
-        }
+# Configure /2-hbnb route of AirBnB_clone_v4 as root location
+    location / {
+        proxy_pass http://localhost:5003/2-hbnb;
+    }
 
-        # Header:
-        add_header X-Served-By "452994-web-01";
+    # Serve static content for AirBnB_clone_v4
+    location /static {
+        proxy_pass http://localhost:5003;
+    }
 
-        # rewrite:
-        rewrite ^/redirect_me https://www.youtube.com/watch?v=QH2-TGUlwu4 permanent;
 
-        # listen [::]:80 default_server;
-
-        root /var/www/html;
-
-        # Add index.php to the list if you are using PHP
-        index index.html index.htm index.nginx-debian.html;
-
-        server_name _;
+# 404 error page
+    error_page 404 /404.html;
+    location = /404.html{
+       internal;
+   }
 }
